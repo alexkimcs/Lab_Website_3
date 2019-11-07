@@ -66,23 +66,22 @@ app.get('/register', function(req, res) {
 });
 
 /*Add your other get/post request handlers below here: */
-
 app.get('/home', function(req, res) {
-	var query = 'select * from favorite_colors;';
-	db.any(query)
+  var query = 'select * from favorite_colors;';
+  db.any(query)
         .then(function (rows) {
             res.render('pages/home',{
-				my_title: "Home Page",
-				data: rows,
-				color: '',
-				color_msg: ''
-			})
+        my_title: "Home Page",
+        data: rows,
+        color: '',
+        color_msg: ''
+      })
 
         })
         .catch(function (err) {
             // display error message in case an error
-            request.flash('error', err);
-            response.render('pages/home', {
+            req.flash('error', err); //if this doesn't work for you replace with console.log
+            res.render('pages/home', {
                 title: 'Home Page',
                 data: '',
                 color: '',
@@ -94,7 +93,7 @@ app.get('/home', function(req, res) {
 app.get('/home/pick_color', function(req, res) {
   var color_choice = req.query.color_selection;
   var color_options =  'select * from favorite_colors;';
-  var color_message = "select color_msg from favorite_colors where hex_value = '" + color_choice + "';"; 
+  var color_message = "select color_msg from favorite_colors where hex_value = '" + color_choice + "';";
   db.task('get-everything', task => {
         return task.batch([
             task.any(color_options),
@@ -111,16 +110,18 @@ app.get('/home/pick_color', function(req, res) {
     })
     .catch(error => {
         // display error message in case an error
-            request.flash('error', err);
-            response.render('pages/home', {
+            req.flash('error', error);//if this doesn't work for you replace with console.log
+            res.render('pages/home', {
                 title: 'Home Page',
                 data: '',
                 color: '',
                 color_msg: ''
             })
     });
-  
+
 });
+
+
 
 app.post('/home/pick_color', function(req, res) {
   var color_hex = req.body.color_hex;
